@@ -1,0 +1,1192 @@
+```html
+<!DOCTYPE html>
+<html lang="en" class="theme-midnight">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ticketing Hub - Operations Dashboard</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            midnight: {
+              bg: '#0B132B',
+              card: '#1C2541',
+              cardHover: '#232F52',
+              border: '#3A506B',
+              accent: '#0077B6',
+              glow: '#48CAE4',
+            },
+            bento: {
+              bg: '#0F172A',
+              card: 'rgba(30, 41, 59, 0.7)',
+              border: 'rgba(255, 255, 255, 0.12)',
+              accent: '#6366F1',
+            }
+          },
+          animation: {
+            'pulse-glow': 'pulseGlow 3s ease-in-out infinite alternate',
+            'float-subtle': 'floatSubtle 5s ease-in-out infinite',
+          },
+          keyframes: {
+            pulseGlow: {
+              '0%': { boxShadow: '0 0 15px rgba(72, 202, 228, 0.2)' },
+              '100%': { boxShadow: '0 0 30px rgba(72, 202, 228, 0.5)' },
+            },
+            floatSubtle: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-5px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Midnight Navy Custom Styling Defaults */
+    html.theme-midnight {
+      --bg-main: #0B132B;
+      --bg-card: #1C2541;
+      --border-color: rgba(58, 80, 107, 0.6);
+      --accent-color: #0077B6;
+      --glow-color: #48CAE4;
+      --text-main: #F1F5F9;
+      --card-radius: 1rem;
+      --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    /* Bento Grid Custom Styling Defaults */
+    html.theme-bento {
+      --bg-main: #090D16;
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --border-color: rgba(255, 255, 255, 0.12);
+      --accent-color: #6366F1;
+      --glow-color: #818CF8;
+      --text-main: #F8FAFC;
+      --card-radius: 1.75rem; /* rounded-3xl */
+      --card-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      transition: background-color 0.4s ease, color 0.4s ease;
+      min-height: 100vh;
+      padding-bottom: 90px; /* Space for bottom navbar */
+    }
+
+    .theme-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--card-radius);
+      box-shadow: var(--card-shadow);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html.theme-bento .theme-card {
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    html.theme-midnight .theme-card:hover {
+      border-color: rgba(72, 202, 228, 0.5);
+      box-shadow: 0 10px 25px -5px rgba(0, 119, 182, 0.3);
+    }
+
+    html.theme-bento .theme-card:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.25);
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(11, 19, 43, 0.5);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(58, 80, 107, 0.8);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--glow-color);
+    }
+
+    /* Active Tab Highlight Animation */
+    .nav-indicator {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+</head>
+
+<body class="selection:bg-cyan-500 selection:text-slate-900">
+
+  <!-- Top Global Header -->
+  <header class="sticky top-0 z-40 w-full backdrop-blur-md bg-slate-950/70 border-b border-slate-800/80 px-4 lg:px-8 py-3">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
+          <i class="fa-solid fa-ticket text-lg"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-lg tracking-tight text-white flex items-center gap-2">
+            Ticketing Hub
+            <span id="activeThemeBadge" class="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+              Midnight Navy
+            </span>
+          </span>
+          <span class="text-[11px] text-slate-400 block -mt-1 font-mono">Operations Portal v2.4</span>
+        </div>
+      </div>
+
+      <!-- User Profile & Action Bar -->
+      <div class="flex items-center gap-3">
+        <!-- New Ticket Quick Button -->
+        <button 
+          id="openCreateModalBtn"
+          class="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-medium text-xs shadow-md transition-all cursor-pointer active:scale-95"
+        >
+          <i class="fa-solid fa-plus text-xs"></i>
+          <span>Create Ticket</span>
+        </button>
+
+        <!-- User Greeting Pill -->
+        <div class="flex items-center gap-3 pl-3 border-l border-slate-800">
+          <div class="text-right hidden md:block">
+            <div id="userFullName" class="text-xs font-bold text-white">Alex Rivera</div>
+            <div id="userIdDisplay" class="text-[10px] text-slate-400 font-mono">USR-8921 • Admin</div>
+          </div>
+          <div class="relative">
+            <div id="userAvatar" class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-md border border-cyan-400/30">
+              AR
+            </div>
+            <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-slate-950" title="System Online"></span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Dashboard Container -->
+  <main class="max-w-7xl mx-auto px-4 lg:px-8 py-6">
+
+    <!-- ================================================================= -->
+    <!-- TAB 1: HOME VIEW (MAIN TICKETING DASHBOARD) -->
+    <!-- ================================================================= -->
+    <section id="tab-home" class="tab-content space-y-6">
+      
+      <!-- Welcome Greeting & Quick Telemetry Bar -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            <span>Welcome back, <span id="welcomeUserName" class="bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent">Alex</span></span>
+            <span class="text-xl">👋</span>
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">Here is the real-time operational overview for today.</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <div class="px-3 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs font-mono text-slate-300 flex items-center gap-2">
+            <i class="fa-solid fa-clock text-cyan-400"></i>
+            <span id="liveClock">--:--:-- UTC</span>
+          </div>
+          <button id="refreshTicketsBtn" class="p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-cyan-500/50 text-slate-300 hover:text-cyan-400 transition-colors text-xs" title="Refresh Feed">
+            <i class="fa-solid fa-rotate"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Key Metrics Overview Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <!-- Metric 1 -->
+        <div class="theme-card p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-medium uppercase tracking-wider">Open Queue</span>
+            <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
+              <i class="fa-solid fa-folder-open text-sm"></i>
+            </div>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span id="metricOpen" class="text-2xl sm:text-3xl font-extrabold text-white font-mono">18</span>
+            <span class="text-[11px] text-emerald-400 font-medium flex items-center gap-0.5">
+              <i class="fa-solid fa-arrow-down text-[9px]"></i> -12%
+            </span>
+          </div>
+        </div>
+
+        <!-- Metric 2 -->
+        <div class="theme-card p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-medium uppercase tracking-wider">In Progress</span>
+            <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
+              <i class="fa-solid fa-spinner text-sm"></i>
+            </div>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span id="metricProgress" class="text-2xl sm:text-3xl font-extrabold text-white font-mono">9</span>
+            <span class="text-[11px] text-amber-400 font-medium">Active Agents</span>
+          </div>
+        </div>
+
+        <!-- Metric 3 -->
+        <div class="theme-card p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-medium uppercase tracking-wider">Critical Escalations</span>
+            <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center">
+              <i class="fa-solid fa-triangle-exclamation text-sm"></i>
+            </div>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span id="metricCritical" class="text-2xl sm:text-3xl font-extrabold text-rose-400 font-mono">3</span>
+            <span class="text-[11px] text-rose-400 font-medium animate-pulse">Needs Review</span>
+          </div>
+        </div>
+
+        <!-- Metric 4 -->
+        <div class="theme-card p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-medium uppercase tracking-wider">SLA Met Rate</span>
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+              <i class="fa-solid fa-chart-line text-sm"></i>
+            </div>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span id="metricSLA" class="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono">98.4%</span>
+            <span class="text-[11px] text-emerald-400 font-medium">Target: &gt;95%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search, Filter & Action Bar -->
+      <div class="theme-card p-4 flex flex-col md:flex-row items-center justify-between gap-3">
+        <!-- Search Bar -->
+        <div class="relative w-full md:w-80">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
+          <input 
+            type="text" 
+            id="ticketSearchInput"
+            placeholder="Search ticket ID, title, requester..."
+            class="w-full pl-9 pr-4 py-2 bg-slate-900/80 border border-slate-700/80 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 transition-all"
+          >
+        </div>
+
+        <!-- Filters & Sort -->
+        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+          <!-- Status Filter -->
+          <select id="filterStatus" class="px-3 py-2 bg-slate-900/80 border border-slate-700/80 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+            <option value="all">All Statuses</option>
+            <option value="Open">Open</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Resolved">Resolved</option>
+          </select>
+
+          <!-- Priority Filter -->
+          <select id="filterPriority" class="px-3 py-2 bg-slate-900/80 border border-slate-700/80 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+            <option value="all">All Priorities</option>
+            <option value="Critical">Critical</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+
+          <!-- Reset Filter Button -->
+          <button id="resetFiltersBtn" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition-colors" title="Clear Filters">
+            <i class="fa-solid fa-filter-circle-xmark"></i>
+          </button>
+
+          <!-- Mobile Create Button -->
+          <button id="mobileCreateTicketBtn" class="sm:hidden px-3 py-2 rounded-xl bg-cyan-600 text-white text-xs font-semibold">
+            + New
+          </button>
+        </div>
+      </div>
+
+      <!-- Tickets Data Table Container -->
+      <div class="theme-card overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-900/90 text-slate-400 uppercase text-[10px] font-semibold tracking-wider border-b border-slate-800">
+              <tr>
+                <th class="px-4 py-3">Ticket ID</th>
+                <th class="px-4 py-3">Subject & Category</th>
+                <th class="px-4 py-3">Requester</th>
+                <th class="px-4 py-3">Priority</th>
+                <th class="px-4 py-3">Status</th>
+                <th class="px-4 py-3">Assignee</th>
+                <th class="px-4 py-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ticketsTableBody" class="divide-y divide-slate-800/60">
+              <!-- Dynamically Populated Rows -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Table Footer / Pagination stats -->
+        <div class="px-4 py-3 bg-slate-900/60 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+          <div>Showing <span id="displayedTicketsCount" class="font-bold text-white">0</span> of <span id="totalTicketsCount" class="font-bold text-white">0</span> tickets</div>
+          <div class="flex items-center gap-1 font-mono text-[11px]">
+            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> Live WebSocket Sync
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB 2: ADMIN VIEW (ADMIN & SYSTEM CONTROL) -->
+    <!-- ================================================================= -->
+    <section id="tab-admin" class="tab-content hidden space-y-6">
+      
+      <!-- Admin Header -->
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            <i class="fa-solid fa-shield-halved text-cyan-400"></i> Admin Operational Control
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">Manage dispatch queues, monitor agent workloads, and view audit security logs.</p>
+        </div>
+        
+        <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20">
+          Role: System Administrator
+        </span>
+      </div>
+
+      <!-- Agent Workload & Telemetry Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Agent Workload Distribution -->
+        <div class="theme-card p-5 lg:col-span-2 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h3 class="font-bold text-white text-sm flex items-center gap-2">
+              <i class="fa-solid fa-users text-cyan-400"></i> Support Agent Capacity
+            </h3>
+            <span class="text-xs text-slate-400">Active Duty: 4 Agents</span>
+          </div>
+
+          <div class="space-y-4 text-xs">
+            <!-- Agent 1 -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between font-medium">
+                <span class="text-white flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Alex Rivera (You)
+                </span>
+                <span class="text-slate-400 font-mono">8 / 12 Tickets (66%)</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full" style="width: 66%"></div>
+              </div>
+            </div>
+
+            <!-- Agent 2 -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between font-medium">
+                <span class="text-white flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Sarah Chen
+                </span>
+                <span class="text-slate-400 font-mono">11 / 12 Tickets (91%)</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-amber-500 to-rose-500 rounded-full" style="width: 91%"></div>
+              </div>
+            </div>
+
+            <!-- Agent 3 -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between font-medium">
+                <span class="text-white flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Marcus Vance
+                </span>
+                <span class="text-slate-400 font-mono">5 / 12 Tickets (41%)</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full" style="width: 41%"></div>
+              </div>
+            </div>
+
+            <!-- Agent 4 -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between font-medium">
+                <span class="text-white flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-slate-500"></span> Elena Rostova (Offline)
+                </span>
+                <span class="text-slate-400 font-mono">0 / 12 Tickets (0%)</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                <div class="h-full bg-slate-700 rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Admin Action Tiles -->
+        <div class="theme-card p-5 space-y-4">
+          <h3 class="font-bold text-white text-sm border-b border-slate-800 pb-3 flex items-center gap-2">
+            <i class="fa-solid fa-sliders text-cyan-400"></i> Dispatch Controls
+          </h3>
+
+          <div class="space-y-3">
+            <button id="adminRebalanceBtn" class="w-full p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-left transition-colors flex items-center gap-3 cursor-pointer">
+              <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
+                <i class="fa-solid fa-scale-balanced text-sm"></i>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-white">Rebalance Queue</div>
+                <div class="text-[10px] text-slate-400">Automatically reassign unassigned tickets.</div>
+              </div>
+            </button>
+
+            <button id="adminSlaSyncBtn" class="w-full p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-left transition-colors flex items-center gap-3 cursor-pointer">
+              <div class="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center">
+                <i class="fa-solid fa-clock-rotate-left text-sm"></i>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-white">SLA Recalculation</div>
+                <div class="text-[10px] text-slate-400">Force recalculate timers for high priority tickets.</div>
+              </div>
+            </button>
+
+            <!-- Maintenance Mode Toggle -->
+            <div class="p-3 rounded-xl bg-slate-900 border border-slate-700/80 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center">
+                  <i class="fa-solid fa-power-off text-sm"></i>
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-white">Maintenance Mode</div>
+                  <div class="text-[10px] text-slate-400">Restrict new incoming tickets.</div>
+                </div>
+              </div>
+              <input type="checkbox" id="maintToggle" class="accent-cyan-500 w-4 h-4 cursor-pointer">
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Audit Security Logs Table -->
+      <div class="theme-card p-5 space-y-3">
+        <h3 class="font-bold text-white text-sm border-b border-slate-800 pb-2 flex items-center gap-2">
+          <i class="fa-solid fa-list-check text-cyan-400"></i> Audit Security & Escalation Stream
+        </h3>
+        <div id="adminAuditLogs" class="space-y-2 font-mono text-xs">
+          <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/80 flex justify-between text-slate-300">
+            <span>[18:42:10] <span class="text-cyan-400">SYS_AUTH</span> User USR-8921 logged in via standard post tunnel.</span>
+            <span class="text-emerald-400">SUCCESS</span>
+          </div>
+          <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/80 flex justify-between text-slate-300">
+            <span>[18:30:15] <span class="text-amber-400">TICKET_ESCALATE</span> Ticket #TK-1002 status changed to CRITICAL.</span>
+            <span class="text-amber-400">NOTIFIED</span>
+          </div>
+          <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/80 flex justify-between text-slate-300">
+            <span>[17:11:04] <span class="text-purple-400">SLA_MONITOR</span> Health check heartbeat verified across 4 cluster nodes.</span>
+            <span class="text-emerald-400">OK</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB 3: SETTINGS VIEW (THEME & SYSTEM PREFERENCES) -->
+    <!-- ================================================================= -->
+    <section id="tab-settings" class="tab-content hidden space-y-6">
+      
+      <!-- Settings Header -->
+      <div>
+        <h2 class="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+          <i class="fa-solid fa-gear text-cyan-400"></i> System & Appearance Settings
+        </h2>
+        <p class="text-xs text-slate-400 mt-1">Customize your theme layout, notification preferences, and session controls.</p>
+      </div>
+
+      <!-- Theme Selector Card -->
+      <div class="theme-card p-6 space-y-4">
+        <div class="border-b border-slate-800 pb-3">
+          <h3 class="font-bold text-white text-base flex items-center gap-2">
+            <i class="fa-solid fa-palette text-cyan-400"></i> Workspace Theme Selection
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">Select your preferred layout aesthetic. Your choice is saved instantly to your profile browser state.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Theme Option 1: Midnight Navy -->
+          <div 
+            id="selectMidnightTheme"
+            class="p-5 rounded-2xl border-2 transition-all cursor-pointer relative group overflow-hidden bg-[#0B132B] border-cyan-500 shadow-lg shadow-cyan-500/10"
+          >
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-[#1C2541] border border-[#3A506B] flex items-center justify-center text-[#48CAE4]">
+                  <i class="fa-solid fa-moon"></i>
+                </div>
+                <div>
+                  <h4 class="font-bold text-white text-sm">Midnight Navy</h4>
+                  <span class="text-[10px] text-cyan-400 font-mono">Deep Oceanic Dark</span>
+                </div>
+              </div>
+              <i id="checkMidnight" class="fa-solid fa-circle-check text-cyan-400 text-lg"></i>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed mb-4">
+              Sleek dark interface with oceanic blue accents, neon cyan highlights, and sharp card structures.
+            </p>
+            <!-- Visual Mockup snippet -->
+            <div class="p-3 rounded-xl bg-[#1C2541] border border-[#3A506B]/50 flex items-center justify-between">
+              <span class="text-[10px] text-slate-300 font-mono">#0B132B / #1C2541</span>
+              <span class="w-3 h-3 rounded-full bg-[#48CAE4]"></span>
+            </div>
+          </div>
+
+          <!-- Theme Option 2: Bento Grid -->
+          <div 
+            id="selectBentoTheme"
+            class="p-5 rounded-2xl border-2 transition-all cursor-pointer relative group overflow-hidden bg-[#0F172A] border-slate-800 hover:border-indigo-500"
+          >
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-2xl bg-indigo-600/30 border border-indigo-400/30 flex items-center justify-center text-indigo-400">
+                  <i class="fa-solid fa-table-cells-large"></i>
+                </div>
+                <div>
+                  <h4 class="font-bold text-white text-sm">Bento Grid</h4>
+                  <span class="text-[10px] text-indigo-400 font-mono">Modular Glassmorphism</span>
+                </div>
+              </div>
+              <i id="checkBento" class="fa-solid fa-circle-check text-slate-600 text-lg"></i>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed mb-4">
+              Modern bento-box grid design with high-rounded corners (`rounded-3xl`), translucent glass blurs, and distinct card margins.
+            </p>
+            <!-- Visual Mockup snippet -->
+            <div class="p-3 rounded-2xl bg-slate-900/80 border border-white/10 backdrop-blur-md flex items-center justify-between">
+              <span class="text-[10px] text-slate-300 font-mono">rounded-3xl / backdrop-blur</span>
+              <span class="w-3 h-3 rounded-full bg-indigo-500"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile & System Preferences Card -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- User Profile Card -->
+        <div class="theme-card p-5 space-y-4">
+          <h3 class="font-bold text-white text-sm border-b border-slate-800 pb-3 flex items-center gap-2">
+            <i class="fa-solid fa-id-card text-cyan-400"></i> Active User Session Details
+          </h3>
+
+          <div class="space-y-3 text-xs">
+            <div class="flex justify-between py-2 border-b border-slate-800/60">
+              <span class="text-slate-400">Full Name</span>
+              <span id="settingsFullName" class="font-bold text-white">Alex Rivera</span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-slate-800/60">
+              <span class="text-slate-400">Username</span>
+              <span id="settingsUsername" class="font-mono text-cyan-400">agent.alex</span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-slate-800/60">
+              <span class="text-slate-400">User Unique ID</span>
+              <span id="settingsUserId" class="font-mono text-slate-300">USR-8921</span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-slate-800/60">
+              <span class="text-slate-400">Authentication Tunnel</span>
+              <span class="font-mono text-emerald-400">Google Apps Script POST</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preferences & Logout Card -->
+        <div class="theme-card p-5 space-y-4 flex flex-col justify-between">
+          <div>
+            <h3 class="font-bold text-white text-sm border-b border-slate-800 pb-3 flex items-center gap-2">
+              <i class="fa-solid fa-bell text-cyan-400"></i> System Preferences
+            </h3>
+
+            <div class="space-y-3 pt-2 text-xs">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="font-semibold text-white">Audio Alerts</div>
+                  <div class="text-[10px] text-slate-400">Play web audio synthesized tone on ticket status change.</div>
+                </div>
+                <input type="checkbox" id="audioAlertsToggle" checked class="accent-cyan-500 w-4 h-4 cursor-pointer">
+              </div>
+
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="font-semibold text-white">Auto-Refresh Interval</div>
+                  <div class="text-[10px] text-slate-400">Poll server for new submissions.</div>
+                </div>
+                <select id="autoRefreshSpeed" class="px-2 py-1 bg-slate-900 border border-slate-700 rounded text-xs text-white">
+                  <option value="15">15 sec</option>
+                  <option value="30" selected>30 sec</option>
+                  <option value="60">1 min</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Session Logout Button -->
+          <div class="pt-4 border-t border-slate-800">
+            <button 
+              id="logoutBtn"
+              class="w-full py-3 px-4 rounded-xl bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/30 transition-all font-bold text-xs flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <i class="fa-solid fa-right-from-bracket"></i>
+              <span>Log Out of Session</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ================================================================= -->
+  <!-- FLOATING BOTTOM NAVIGATION BAR -->
+  <!-- ================================================================= -->
+  <nav class="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-lg bg-slate-950/90 backdrop-blur-xl border border-slate-800 rounded-2xl p-1.5 shadow-2xl shadow-black/80">
+    <div class="grid grid-cols-3 gap-1 relative">
+      
+      <!-- Nav Button 1: Home -->
+      <button 
+        id="navHome" 
+        data-tab="home"
+        class="nav-tab-btn flex flex-col items-center justify-center py-2 px-3 rounded-xl text-cyan-400 font-semibold text-xs transition-all relative cursor-pointer"
+      >
+        <i class="fa-solid fa-house text-base mb-1"></i>
+        <span>Home</span>
+      </button>
+
+      <!-- Nav Button 2: Admin -->
+      <button 
+        id="navAdmin" 
+        data-tab="admin"
+        class="nav-tab-btn flex flex-col items-center justify-center py-2 px-3 rounded-xl text-slate-400 hover:text-slate-200 font-semibold text-xs transition-all relative cursor-pointer"
+      >
+        <i class="fa-solid fa-shield-halved text-base mb-1"></i>
+        <span>Admin</span>
+      </button>
+
+      <!-- Nav Button 3: Settings -->
+      <button 
+        id="navSettings" 
+        data-tab="settings"
+        class="nav-tab-btn flex flex-col items-center justify-center py-2 px-3 rounded-xl text-slate-400 hover:text-slate-200 font-semibold text-xs transition-all relative cursor-pointer"
+      >
+        <i class="fa-solid fa-gear text-base mb-1"></i>
+        <span>Settings</span>
+      </button>
+
+    </div>
+  </nav>
+
+  <!-- ================================================================= -->
+  <!-- MODAL: CREATE TICKET -->
+  <!-- ================================================================= -->
+  <div id="createTicketModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="theme-card w-full max-w-lg p-6 space-y-4 animate-float-subtle">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-plus-circle text-cyan-400"></i> Dispatch New Ticket
+        </h3>
+        <button id="closeCreateModalBtn" class="text-slate-400 hover:text-white text-base">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="createTicketForm" class="space-y-4 text-xs">
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Issue Subject Title</label>
+          <input 
+            type="text" 
+            id="newTitle" 
+            required
+            placeholder="e.g. VPN Authentication Timeout on Node-4" 
+            class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-500"
+          >
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-300 font-medium mb-1">Category</label>
+            <select id="newCategory" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-500">
+              <option value="Infrastructure">Infrastructure</option>
+              <option value="Software/API">Software/API</option>
+              <option value="Security Access">Security Access</option>
+              <option value="Hardware">Hardware</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-slate-300 font-medium mb-1">Priority SLA</label>
+            <select id="newPriority" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-500">
+              <option value="Low">Low</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="High">High</option>
+              <option value="Critical">Critical</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-300 font-medium mb-1">Requester Name</label>
+            <input 
+              type="text" 
+              id="newRequester" 
+              required
+              placeholder="Customer / Department" 
+              class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-500"
+            >
+          </div>
+
+          <div>
+            <label class="block text-slate-300 font-medium mb-1">Assignee Agent</label>
+            <select id="newAssignee" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-500">
+              <option value="Alex Rivera">Alex Rivera</option>
+              <option value="Sarah Chen">Sarah Chen</option>
+              <option value="Marcus Vance">Marcus Vance</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Description & Reproduction Steps</label>
+          <textarea 
+            id="newDescription" 
+            rows="3" 
+            required
+            placeholder="Detailed description..." 
+            class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-500"
+          ></textarea>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-2">
+          <button type="button" id="cancelCreateBtn" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-medium">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold">Submit Ticket</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- VIEW TICKET DETAILS MODAL -->
+  <div id="viewTicketModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="theme-card w-full max-w-lg p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div>
+          <span id="modalTicketId" class="font-mono text-xs font-bold text-cyan-400">#TK-1001</span>
+          <h3 id="modalTicketTitle" class="text-base font-bold text-white">Database Latency Spike</h3>
+        </div>
+        <button id="closeViewModalBtn" class="text-slate-400 hover:text-white text-base">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-2 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+          <div><span class="text-slate-400">Priority:</span> <span id="modalPriority" class="font-bold">Critical</span></div>
+          <div><span class="text-slate-400">Status:</span> <span id="modalStatus" class="font-bold">Open</span></div>
+          <div><span class="text-slate-400">Requester:</span> <span id="modalRequester" class="text-white">DevOps Team</span></div>
+          <div><span class="text-slate-400">Assignee:</span> <span id="modalAssignee" class="text-white">Alex Rivera</span></div>
+        </div>
+
+        <div>
+          <span class="block text-slate-400 mb-1">Details:</span>
+          <p id="modalDescription" class="p-3 bg-slate-900 rounded-xl text-slate-300 border border-slate-800 leading-relaxed">
+            High CPU utilization observed on secondary replica node.
+          </p>
+        </div>
+      </div>
+
+      <div class="pt-2 flex items-center justify-between">
+        <button id="resolveTicketActionBtn" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5">
+          <i class="fa-solid fa-circle-check"></i> Mark Resolved
+        </button>
+        <button id="closeViewModalBottomBtn" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="fixed top-16 right-4 z-50 space-y-2 pointer-events-none"></div>
+
+  <script>
+    // Initial State & Mock Data
+    const state = {
+      user: {
+        username: localStorage.getItem('username') || 'agent.alex',
+        fullName: localStorage.getItem('full_name') || 'Alex Rivera',
+        userId: localStorage.getItem('user_id') || 'USR-8921',
+        role: 'Senior Operations Agent'
+      },
+      currentTheme: localStorage.getItem('theme_choice') || 'midnight',
+      activeTab: 'home',
+      soundEnabled: true,
+      tickets: [
+        { id: 'TK-1001', title: 'Database Primary Cluster High CPU', category: 'Infrastructure', requester: 'DevOps Lead', priority: 'Critical', status: 'Open', assignee: 'Alex Rivera', description: 'Primary PostgreSQL node reporting 98% utilization on index rebuild.' },
+        { id: 'TK-1002', title: 'SSO SAML Gateway SSL Expiration', category: 'Security Access', requester: 'InfoSec', priority: 'High', status: 'In Progress', assignee: 'Sarah Chen', description: 'Renew wildcard SSL cert before 00:00 UTC cutoff.' },
+        { id: 'TK-1003', title: 'Rest API Rate Limiter False Positives', category: 'Software/API', requester: 'Payment API Team', priority: 'Medium', status: 'Open', assignee: 'Marcus Vance', description: 'Customer Webhooks throttled during burst traffic windows.' },
+        { id: 'TK-1004', title: 'New Workstation Provisioning', category: 'Hardware', requester: 'HR Onboarding', priority: 'Low', status: 'Resolved', assignee: 'Alex Rivera', description: 'MacBook Pro M3 Max deployed with MDM profile.' },
+        { id: 'TK-1005', title: 'Kubernetes Ingress Controller Error 502', category: 'Infrastructure', requester: 'SRE Team', priority: 'Critical', status: 'In Progress', assignee: 'Alex Rivera', description: 'NGINX ingress pod crashlooping due to memory pressure.' }
+      ]
+    };
+
+    function playAudioTone(freq = 440, type = 'sine', duration = 0.15) {
+      if (!state.soundEnabled) return;
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {
+        // Audio playback restricted until user gesture
+      }
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      const colors = {
+        info: 'bg-slate-900 border-cyan-500/50 text-cyan-300',
+        success: 'bg-slate-900 border-emerald-500/50 text-emerald-300',
+        warning: 'bg-slate-900 border-amber-500/50 text-amber-300'
+      };
+
+      toast.className = `p-3.5 rounded-xl border ${colors[type] || colors.info} shadow-2xl text-xs font-semibold flex items-center gap-2 transform translate-x-10 opacity-0 transition-all duration-300 pointer-events-auto`;
+      toast.innerHTML = `<i class="fa-solid fa-circle-info"></i> <span>${message}</span>`;
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.remove('translate-x-10', 'opacity-0');
+      }, 50);
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-x-10');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    function applyTheme(themeName) {
+      state.currentTheme = themeName;
+      localStorage.setItem('theme_choice', themeName);
+
+      const html = document.documentElement;
+      const badge = document.getElementById('activeThemeBadge');
+      const checkMidnight = document.getElementById('checkMidnight');
+      const checkBento = document.getElementById('checkBento');
+      const cardMidnight = document.getElementById('selectMidnightTheme');
+      const cardBento = document.getElementById('selectBentoTheme');
+
+      if (themeName === 'bento') {
+        html.className = 'theme-bento';
+        badge.textContent = 'Bento Grid';
+        badge.className = 'text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20';
+
+        if (checkMidnight) {
+          checkMidnight.className = 'fa-solid fa-circle-check text-slate-600 text-lg';
+          checkBento.className = 'fa-solid fa-circle-check text-indigo-400 text-lg';
+          cardMidnight.className = 'p-5 rounded-2xl border-2 transition-all cursor-pointer relative group overflow-hidden bg-[#0B132B] border-slate-800';
+          cardBento.className = 'p-5 rounded-2xl border-2 transition-all cursor-pointer relative group overflow-hidden bg-[#0F172A] border-indigo-500 shadow-lg shadow-indigo-500/10';
+        }
+      } else {
+        html.className = 'theme-midnight';
+        badge.textContent = 'Midnight Navy';
+        badge.className = 'text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20';
+
+        if (checkMidnight) {
+          checkMidnight.className = 'fa-solid fa-circle-check text-cyan-400 text-lg';
+          checkBento.className = 'fa-solid fa-circle-check text-slate-600 text-lg';
+          cardMidnight.className = 'p-5 rounded-2xl border-2 transition-all cursor-pointer relative group overflow-hidden bg-[#0B132B] border-cyan-500 shadow-lg shadow-cyan-500/10';
+          cardBento.className = 'p-5 rounded-2xl border-2 transition-all cursor-pointer relative group overflow-hidden bg-[#0F172A] border-slate-800';
+        }
+      }
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      playAudioTone(600, 'sine', 0.08);
+
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+      // Update navbar styling
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+        if (btn.dataset.tab === tabId) {
+          btn.className = 'nav-tab-btn flex flex-col items-center justify-center py-2 px-3 rounded-xl text-cyan-400 font-semibold text-xs transition-all relative cursor-pointer';
+        } else {
+          btn.className = 'nav-tab-btn flex flex-col items-center justify-center py-2 px-3 rounded-xl text-slate-400 hover:text-slate-200 font-semibold text-xs transition-all relative cursor-pointer';
+        }
+      });
+    }
+
+    function renderTickets() {
+      const tbody = document.getElementById('ticketsTableBody');
+      const search = document.getElementById('ticketSearchInput').value.toLowerCase();
+      const filterStatus = document.getElementById('filterStatus').value;
+      const filterPriority = document.getElementById('filterPriority').value;
+
+      const filtered = state.tickets.filter(t => {
+        const matchesSearch = t.id.toLowerCase().includes(search) || 
+                              t.title.toLowerCase().includes(search) || 
+                              t.requester.toLowerCase().includes(search);
+        const matchesStatus = filterStatus === 'all' || t.status === filterStatus;
+        const matchesPriority = filterPriority === 'all' || t.priority === filterPriority;
+        return matchesSearch && matchesStatus && matchesPriority;
+      });
+
+      tbody.innerHTML = '';
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="px-4 py-8 text-center text-slate-500 italic">
+              No matching ticket records found.
+            </td>
+          </tr>
+        `;
+      } else {
+        filtered.forEach(t => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-800/40 transition-colors group';
+
+          // Priority badge colors
+          const priorityStyles = {
+            Critical: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+            High: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+            Medium: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+            Low: 'bg-slate-500/10 text-slate-400 border-slate-500/20'
+          };
+
+          // Status badge colors
+          const statusStyles = {
+            Open: 'bg-blue-500/10 text-blue-400',
+            'In Progress': 'bg-amber-500/10 text-amber-400',
+            Resolved: 'bg-emerald-500/10 text-emerald-400'
+          };
+
+          tr.innerHTML = `
+            <td class="px-4 py-3 font-mono font-bold text-cyan-400">${t.id}</td>
+            <td class="px-4 py-3">
+              <div class="font-bold text-white group-hover:text-cyan-300 transition-colors">${t.title}</div>
+              <div class="text-[10px] text-slate-400">${t.category}</div>
+            </td>
+            <td class="px-4 py-3 text-slate-300">${t.requester}</td>
+            <td class="px-4 py-3">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${priorityStyles[t.priority] || priorityStyles.Low}">
+                ${t.priority}
+              </span>
+            </td>
+            <td class="px-4 py-3">
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold ${statusStyles[t.status] || 'text-slate-400'}">
+                ● ${t.status}
+              </span>
+            </td>
+            <td class="px-4 py-3 text-slate-300">${t.assignee}</td>
+            <td class="px-4 py-3 text-right space-x-1">
+              <button onclick="viewTicket('${t.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-cyan-600 text-slate-300 hover:text-white transition-colors" title="View Ticket">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+              ${t.status !== 'Resolved' ? `
+                <button onclick="resolveTicket('${t.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-emerald-600 text-slate-300 hover:text-white transition-colors" title="Resolve Ticket">
+                  <i class="fa-solid fa-check"></i>
+                </button>
+              ` : ''}
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // Update Counters
+      document.getElementById('displayedTicketsCount').textContent = filtered.length;
+      document.getElementById('totalTicketsCount').textContent = state.tickets.length;
+
+      // Update Top Metrics
+      document.getElementById('metricOpen').textContent = state.tickets.filter(t => t.status === 'Open').length;
+      document.getElementById('metricProgress').textContent = state.tickets.filter(t => t.status === 'In Progress').length;
+      document.getElementById('metricCritical').textContent = state.tickets.filter(t => t.priority === 'Critical' && t.status !== 'Resolved').length;
+    }
+
+    let selectedTicketId = null;
+
+    window.viewTicket = function(id) {
+      const ticket = state.tickets.find(t => t.id === id);
+      if (!ticket) return;
+
+      selectedTicketId = id;
+      document.getElementById('modalTicketId').textContent = `#${ticket.id}`;
+      document.getElementById('modalTicketTitle').textContent = ticket.title;
+      document.getElementById('modalPriority').textContent = ticket.priority;
+      document.getElementById('modalStatus').textContent = ticket.status;
+      document.getElementById('modalRequester').textContent = ticket.requester;
+      document.getElementById('modalAssignee').textContent = ticket.assignee;
+      document.getElementById('modalDescription').textContent = ticket.description;
+
+      document.getElementById('viewTicketModal').classList.remove('hidden');
+      playAudioTone(700, 'sine', 0.1);
+    };
+
+    window.resolveTicket = function(id) {
+      const ticket = state.tickets.find(t => t.id === id);
+      if (ticket) {
+        ticket.status = 'Resolved';
+        renderTickets();
+        showToast(`Ticket ${id} marked as Resolved!`, 'success');
+        playAudioTone(880, 'triangle', 0.2);
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load Theme
+      applyTheme(state.currentTheme);
+
+      // Populate User Info
+      document.getElementById('userFullName').textContent = state.user.fullName;
+      document.getElementById('welcomeUserName').textContent = state.user.fullName.split(' ')[0];
+      document.getElementById('settingsFullName').textContent = state.user.fullName;
+      document.getElementById('settingsUsername').textContent = state.user.username;
+      document.getElementById('settingsUserId').textContent = state.user.userId;
+
+      // Initials for Avatar
+      const initials = state.user.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      document.getElementById('userAvatar').textContent = initials || 'AR';
+
+      // Navigation Bar Click Listeners
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+      });
+
+      // Theme Selection Listeners
+      document.getElementById('selectMidnightTheme').addEventListener('click', () => applyTheme('midnight'));
+      document.getElementById('selectBentoTheme').addEventListener('click', () => applyTheme('bento'));
+
+      // Search & Filter Input Handlers
+      document.getElementById('ticketSearchInput').addEventListener('input', renderTickets);
+      document.getElementById('filterStatus').addEventListener('change', renderTickets);
+      document.getElementById('filterPriority').addEventListener('change', renderTickets);
+      document.getElementById('resetFiltersBtn').addEventListener('click', () => {
+        document.getElementById('ticketSearchInput').value = '';
+        document.getElementById('filterStatus').value = 'all';
+        document.getElementById('filterPriority').value = 'all';
+        renderTickets();
+      });
+
+      // Live Clock Updates
+      setInterval(() => {
+        const now = new Date();
+        document.getElementById('liveClock').textContent = now.toUTCString().split(' ')[4] + ' UTC';
+      }, 1000);
+
+      // Create Ticket Modal Controls
+      const createModal = document.getElementById('createTicketModal');
+      const openModal = () => createModal.classList.remove('hidden');
+      const closeModal = () => createModal.classList.add('hidden');
+
+      document.getElementById('openCreateModalBtn').addEventListener('click', openModal);
+      document.getElementById('mobileCreateTicketBtn').addEventListener('click', openModal);
+      document.getElementById('closeCreateModalBtn').addEventListener('click', closeModal);
+      document.getElementById('cancelCreateBtn').addEventListener('click', closeModal);
+
+      // View Ticket Modal Close
+      document.getElementById('closeViewModalBtn').addEventListener('click', () => {
+        document.getElementById('viewTicketModal').classList.add('hidden');
+      });
+      document.getElementById('closeViewModalBottomBtn').addEventListener('click', () => {
+        document.getElementById('viewTicketModal').classList.add('hidden');
+      });
+      document.getElementById('resolveTicketActionBtn').addEventListener('click', () => {
+        if (selectedTicketId) {
+          resolveTicket(selectedTicketId);
+          document.getElementById('viewTicketModal').classList.add('hidden');
+        }
+      });
+
+      // Form Submission logic
+      document.getElementById('createTicketForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const newId = `TK-${Math.floor(1000 + Math.random() * 9000)}`;
+        const newTicket = {
+          id: newId,
+          title: document.getElementById('newTitle').value,
+          category: document.getElementById('newCategory').value,
+          priority: document.getElementById('newPriority').value,
+          requester: document.getElementById('newRequester').value,
+          assignee: document.getElementById('newAssignee').value,
+          description: document.getElementById('newDescription').value,
+          status: 'Open'
+        };
+
+        state.tickets.unshift(newTicket);
+        renderTickets();
+        closeModal();
+        e.target.reset();
+        showToast(`Ticket ${newId} dispatched successfully!`, 'success');
+        playAudioTone(900, 'sine', 0.25);
+      });
+
+      // Audio Alerts Toggle
+      document.getElementById('audioAlertsToggle').addEventListener('change', (e) => {
+        state.soundEnabled = e.target.checked;
+      });
+
+      // Admin Action Buttons
+      document.getElementById('adminRebalanceBtn').addEventListener('click', () => {
+        showToast('Automated queue rebalance completed across 4 agents.', 'info');
+      });
+      document.getElementById('adminSlaSyncBtn').addEventListener('click', () => {
+        showToast('SLA timer sync force-updated.', 'info');
+      });
+
+      // Logout Functionality
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.clear();
+        showToast('Logging out...', 'warning');
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 1000);
+      });
+
+      // Initial Table Render
+      renderTickets();
+    });
+  </script>
+</body>
+</html>
+```
