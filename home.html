@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home - Report Issue</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <ul class="nav-links">
+    <li class="nav-item">
+<a href="page.html" style="background-image: url('news.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+    <li class="nav-item">
+<a href="home.html" style="background-image: url('report.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+    <li class="nav-item">
+<a href="inbox.html" style="background-image: url('inbox.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+    <li class="nav-item">
+<a href="admin.html" style="background-image: url('admin.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+    <li class="nav-item">
+      <a href="#" class="nav-logout-btn" style="background-image: url('logout.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+  </ul>
+</nav>
+  <div class="container">
+
+  <div class="login-wrapper">
+    <div class="login-card">
+      <!-- Top Header -->
+      <div class="header">
+        <h2>SEND REPORT</h2>
+      </div>
+
+      <!-- Main Issue Reporting Form -->
+      <div class="form-card" style="margin-top: 1rem; border: none; padding: 0; box-shadow: none; background: transparent;">
+        <form id="issueForm">
+          <div class="form-group">
+            <label for="location">Machine</label>
+            <input type="text" id="location" required placeholder="Malfunction Machine">
+          </div>
+
+          <div class="form-group">
+            <label for="issue">Issue Description</label>
+            <textarea id="issue" required placeholder="Describe the issue in detail..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Attach File / Photo (Optional)</label>
+            
+            <div class="drop-zone" id="dropZone">
+              <span class="drop-icon">📁</span>
+              <p class="drop-text">Drag & drop file here or <span class="browse-link">browse</span></p>
+              <span class="drop-info">Supports images, PDF, DOC, DOCX</span>
+              <input type="file" id="fileInput" class="drop-input" accept="image/*,.pdf,.doc,.docx">
+            </div>
+
+            <!-- Selected File Preview Container -->
+            <div class="file-preview" id="filePreview" style="display: none;">
+              <span id="fileName">file_name.png</span>
+              <button type="button" class="btn-remove" id="removeFileBtn" title="Remove file">&times;</button>
+            </div>
+          </div>
+
+          <button type="submit" id="submitBtn" class="btn-submit">Submit Issue</button>
+          <div id="statusMsg" class="status-msg"></div>
+        </form>      
+      </div>
+    </div>
+        <div class="header-actions">
+          <button class="btn-secondary" id="openHistoryBtn">📑 Report History</button>
+        </div>    
+  </div>
+
+  <!-- Report History Modal -->
+  <div class="modal-overlay" id="historyModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Your Submitted Reports</h2>
+        <button class="close-btn" id="closeHistoryBtn">&times;</button>
+      </div>
+      <div class="records-container">
+        <div id="loadingHistory" style="color: #666; font-size: 0.9rem; text-align: center; padding: 1rem;">Loading report history...</div>
+        <ul id="recordsList" class="records-list"></ul>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

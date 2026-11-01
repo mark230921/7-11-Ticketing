@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>News & Updates</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .news-card-img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-top: 0.85rem;
+      border: 1px solid #e5e7eb;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <ul class="nav-links">
+    <li class="nav-item">
+<a href="home.html" style="background-image: url('report.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+    <li class="nav-item">
+<a href="inbox.html" style="background-image: url('inbox.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+    <li class="nav-item">
+<a href="page.html" style="background-image: url('news.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+    <li class="nav-item">
+<a href="admin.html" style="background-image: url('admin.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+    <li class="nav-item">
+      <a href="#" class="nav-logout-btn" style="background-image: url('logout.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+  </ul>
+</nav>
+
+  <div class="container">
+    <!-- User Bar -->
+    <div class="user-card">
+      <div>User ID: <span class="badge" id="displayUserId">...</span></div>
+      <div>Logged in as: <strong id="displayUsername">...</strong></div>
+    </div>
+
+    <!-- Public News & Updates Feed -->
+    <div class="feed-section" style="margin-top: 1.5rem;">
+      <div class="header" style="margin-bottom: 1rem; border-bottom: none;">
+        <h2>📰 Latest Updates & News</h2>
+        <button onclick="fetchUpdates()" class="btn-refresh">🔄 Refresh Feed</button>
+      </div>
+
+      <div id="loadingFeed" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading latest news...</div>
+      <ul id="feedList" class="messages-list"></ul>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

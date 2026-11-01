@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+ <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="card">
+      <center>
+    <h2>Ticketing Hub</h2>
+      </center>
+    <br>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" required placeholder="Enter username">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" required placeholder="Enter password">
+      </div>
+      <button type="submit" id="submitBtn" class="btn">Log In</button>
+      <div id="errorMsg" class="error-msg"></div>
+    </form>
+  </div>
+
+  <script>
+    // Paste your Google Apps Script Web App URL here
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzuzScH7TQdFWv7rKSmqfgMp582V7YIl4N2B8ove5QrjUrtGltpY715d6JZNlb2FbGpkA/exec";
+
+    const form = document.getElementById('loginForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const errorMsg = document.getElementById('errorMsg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Authenticating...';
+      errorMsg.style.display = 'none';
+
+      try {
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ 
+            action: 'login', // Tells Apps Script to run login block
+            username: username, 
+            password: password 
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+          // Store user session details
+          localStorage.setItem('user_id', result.userId);
+          localStorage.setItem('username', result.username);
+          localStorage.setItem('full_name', result.fullName || result.username);
+
+          // Redirect to Home Page
+          window.location.href = 'page.html';
+        } else {
+          errorMsg.textContent = result.message || 'Invalid credentials.';
+          errorMsg.style.display = 'block';
+        }
+      } catch (err) {
+        errorMsg.textContent = 'Connection error. Please try again.';
+        errorMsg.style.display = 'block';
+        console.error(err);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Log In';
+      }
+    });
+  </script>
+</body>
+</html>

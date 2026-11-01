@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>News & Updates</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .news-card-img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-top: 0.85rem;
+      border: 1px solid #e5e7eb;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <ul class="nav-links">
+    <li class="nav-item">
+<a href="page.html" style="background-image: url('news.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+    <li class="nav-item">
+<a href="home.html" style="background-image: url('report.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+    <li class="nav-item">
+<a href="inbox.html" style="background-image: url('inbox.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+    <li class="nav-item">
+<a href="admin.html" style="background-image: url('admin.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+    <li class="nav-item">
+      <a href="#" class="nav-logout-btn" style="background-image: url('logout.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+  </ul>
+</nav>
+
+  <div class="container">
+    <!-- User Bar -->
+    <div class="user-card">
+      <div>WELCOME: <span class="badge" id="displayUserId">...</span></div>
+    </div>
+
+    <!-- Public News & Updates Feed -->
+    <div class="feed-section" style="margin-top: 1.5rem;">
+      <div class="header" style="margin-bottom: 1rem; border-bottom: none;">
+        <h2>📰 Latest Updates & News</h2>
+      </div>
+      <ul id="feedList" class="messages-list"></ul>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  
+  <!-- Automatic Auto-Refresh Timer -->
+  <script>
+    // Poll for new updates every 10 seconds (10000ms)
+    setInterval(() => {
+      if (typeof fetchUpdates === 'function') {
+        fetchUpdates();
+      } else if (typeof fetchUpdatesFeed === 'function') {
+        fetchUpdatesFeed();
+      }
+    }, 5000);
+  </script>
+</body>
+</html>

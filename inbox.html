@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inbox - Notifications</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="navbar">
+  <ul class="nav-links">
+    <li class="nav-item">
+<a href="page.html" style="background-image: url('news.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+    <li class="nav-item">
+<a href="home.html" style="background-image: url('report.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+    <li class="nav-item">
+<a href="inbox.html" style="background-image: url('inbox.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+    <li class="nav-item">
+<a href="admin.html" style="background-image: url('admin.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+    <li class="nav-item">
+      <a href="#" class="nav-logout-btn" style="background-image: url('logout.png'); background-size: contain; width: 30px; height: 30px; background-position: center; background-repeat: no-repeat;"></a>
+    </li>
+  </ul>
+</nav>
+        <div class="header">  
+        <h2>INBOX</h2>
+      </div>
+   <div class="inbox-card">
+  <div id="loadingMsg" style="text-align: center; color: #666; padding: 2rem;">Loading messages...</div>
+    <ul id="messagesList" class="messages-list"></ul>
+  </div>
+</div>
+  <script src="script.js"></script>
+</body>
+</html>
